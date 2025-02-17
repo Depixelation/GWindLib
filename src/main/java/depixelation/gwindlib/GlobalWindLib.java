@@ -1,9 +1,20 @@
 package depixelation.gwindlib;
 
+import depixelation.gwindlib.config.Constants;
+import depixelation.gwindlib.util.Debug;
+import depixelation.gwindlib.util.WindCalculator;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 public class GlobalWindLib implements ModInitializer {
 	public static final String MOD_ID = "gwindlib";
@@ -15,10 +26,27 @@ public class GlobalWindLib implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, minecraftServer) -> {
+			PacketByteBuf buf = PacketByteBufs.create();
+			buf.writeLong(serverPlayNetworkHandler.getPlayer().getServerWorld().getSeed());
 
-		LOGGER.info("GWindLib init");
+			minecraftServer.execute(() -> {
+				ServerPlayNetworking.send(serverPlayNetworkHandler.getPlayer(), Constants.WIND_SEED_PACKET_ID, buf);
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(Constants.WIND_SEED_PACKET_ID, (minecraftServer, serverPlayerEntity, serverPlayNetworkHandler, packetByteBuf, packetSender) ->  {
+			Debug.send("Packet recieved");
+			PacketByteBuf buf = PacketByteBufs.create();
+			buf.writeLong(serverPlayerEntity.getServerWorld().getSeed());
+
+			minecraftServer.execute(() -> {
+				ServerPlayNetworking.send(serverPlayNetworkHandler.getPlayer(), Constants.WIND_SEED_PACKET_ID, buf);
+			});
+		});
+	}
+
+	public static Optional<Vec3d> getWind(ServerWorld world){
+		return ((WindyWorld) world).getWind();
 	}
 }

@@ -1,6 +1,7 @@
 ### fuck you ###
 .gradle/
 build/
+run/
 
 ### IntelliJ IDEA ###
 out/
