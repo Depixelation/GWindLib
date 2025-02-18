@@ -62,6 +62,6 @@ public class ClientWorldMixin implements WindyWorld, ClientWorldInterface {
 
 	@Unique
 	private void debug(String msg){
-		Debug.send(msg);
+		//Debug.send(msg);
 	}
 }

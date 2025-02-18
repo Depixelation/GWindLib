@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 
 public class WindCalculator {
     public static Vec3d calculate(long t, long seed, World world){
+        if (!world.getRegistryKey().equals(World.OVERWORLD)) return Vec3d.ZERO;
         double θ = Noise.positiveNoise((double) t / (Constants.DAY_LENGTH * 3), (int) seed) * Math.PI * 2;
         double a = Noise.positiveNoise((double) t / (Constants.DAY_LENGTH), -(int) seed);
 
@@ -19,7 +20,7 @@ public class WindCalculator {
         }
 
         double hourlyVariance = Noise.positiveNoise((double) t / Constants.HOUR_LENGTH, ((int) seed) + 1);
-        hourlyVariance /= 0.5;
+        hourlyVariance /= 2;
         hourlyVariance += 0.5;
         a *= hourlyVariance;
 

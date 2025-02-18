@@ -39,6 +39,6 @@ public abstract class ServerWorldMixin implements WindyWorld {
 
 	@Unique
 	private void debug(String msg){
-		Debug.send(msg);
+		//Debug.send(msg);
 	}
 }
