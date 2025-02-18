@@ -30,7 +30,7 @@ public class WindCalculator {
 
         a = mul(a, gusts, gustiness);
 
-        a *= Constants.MAX_WIND_SPEED;
+        a *= Constants.MAX_WIND_SPEED/20;
 
         a *= Constants.WIND_SPEED_MULTIPLIER;
 
